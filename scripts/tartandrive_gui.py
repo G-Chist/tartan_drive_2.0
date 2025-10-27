@@ -19,7 +19,11 @@ from rasterio.transform import rowcol
 
 plt.rcParams['image.interpolation'] = 'None'
 
-_dat = rasterio.open(r"./assets/gascola.tif")
+try:
+    _dat = rasterio.open(r"./assets/gascola.tif")
+except rasterio.errors.RasterioIOError or FileNotFoundError:
+    _dat = rasterio.open(r"../assets/gascola.tif")
+
 _scale = 0.5
 _map = _dat.read(out_shape=(_dat.count,
     int(_dat.height * _scale),
@@ -27,8 +31,12 @@ _map = _dat.read(out_shape=(_dat.count,
 ), resampling=Resampling.bilinear)[:3]/255.0
 
 
-with open("./assets/files.yaml") as stream:
-    FILE_MAP = yaml.safe_load(stream)
+try:
+    with open("./assets/files.yaml") as stream:
+        FILE_MAP = yaml.safe_load(stream)
+except FileNotFoundError:
+    with open("../assets/files.yaml") as stream:
+        FILE_MAP = yaml.safe_load(stream)
 
 KITTI_FILE_MAP = FILE_MAP['kitti']
 
